@@ -34,12 +34,17 @@ COLUMNS = ["วันที่", "รายการ", "หมวดหมู่
 # ─── Google Sheets connection ───────────────────────────────────────────────
 
 def get_gspread_client():
-    creds_path = os.path.join(os.path.dirname(__file__), "credentials.json")
     scopes = [
         "https://www.googleapis.com/auth/spreadsheets",
         "https://www.googleapis.com/auth/drive",
     ]
-    creds = Credentials.from_service_account_file(creds_path, scopes=scopes)
+    creds_path = os.path.join(os.path.dirname(__file__), "credentials.json")
+    if os.path.exists(creds_path):
+        creds = Credentials.from_service_account_file(creds_path, scopes=scopes)
+    else:
+        creds = Credentials.from_service_account_info(
+            dict(st.secrets["gcp_service_account"]), scopes=scopes
+        )
     return gspread.authorize(creds)
 
 
