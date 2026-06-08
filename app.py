@@ -204,10 +204,14 @@ mama_owes_total = filtered["หม่ามี้ติดปะป๊า"].sum(
 papa_owes_total = filtered["ปะป๊าติดหม่ามี้"].sum()
 net = mama_owes_total - papa_owes_total  # บวก = หม่ามี้ยังติดอยู่, ลบ = ปะป๊ายังติดอยู่
 
+# ยอดสุทธิที่ค้างจริงๆ (บวก = หม่ามี้ติดปะป๊า, ลบ = ปะป๊าติดหม่ามี้)
+mama_net = max(0.0, float(net))   # หม่ามี้ยังติดปะป๊าอยู่
+papa_net = max(0.0, float(-net))  # ปะป๊ายังติดหม่ามี้อยู่
+
 c1, c2, c3, c4 = st.columns(4)
 c1.metric("💰 ยอดรวมทั้งหมด", f"{total:,.2f} ฿")
-c2.metric("👨 หม่ามี้ติดปะป๊า", f"{mama_owes_total:,.2f} ฿")
-c3.metric("👩 ปะป๊าติดหม่ามี้", f"{papa_owes_total:,.2f} ฿")
+c2.metric("👨 หม่ามี้ติดปะป๊า", f"{mama_net:,.2f} ฿")
+c3.metric("👩 ปะป๊าติดหม่ามี้", f"{papa_net:,.2f} ฿")
 if abs(net) < 0.01:
     c4.metric("🎉 สรุปหนี้", "เคลียร์แล้ว ✅")
 elif net > 0:
