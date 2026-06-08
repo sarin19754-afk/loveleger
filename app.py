@@ -98,15 +98,23 @@ hr { border-color: rgba(255,255,255,0.1) !important; }
 /* Warning/Success/Info boxes */
 .stAlert { border-radius: 12px !important; }
 
-/* Material Symbols fix - แก้ keyboard_double_arrow แสดงเป็นข้อความ */
+/* Material Symbols fix - ซ่อน icon ที่แสดงเป็นข้อความ */
 .material-symbols-rounded {
     font-family: 'Material Symbols Rounded' !important;
     font-size: 24px !important;
     font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+    color: transparent !important;
+    width: 0 !important;
+    overflow: hidden !important;
+    display: none !important;
 }
-.material-icons {
-    font-family: 'Material Icons' !important;
-    font-size: 24px !important;
+/* ซ่อน icon ใน sidebar collapse */
+[data-testid="collapsedControl"] span {
+    display: none !important;
+}
+/* ซ่อน icon ใน expander */
+[data-testid="stExpander"] summary span[data-testid="stExpanderToggleIcon"] {
+    display: none !important;
 }
 
 /* Expander */
