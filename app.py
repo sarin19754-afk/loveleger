@@ -197,7 +197,9 @@ if search:
 
 # ─── Summary cards ───────────────────────────────────────────────────────────
 
-total = filtered["ยอดรวม"].sum()
+# แยก row ปกติ กับ row เคลียร์หนี้
+normal = filtered[filtered["ประเภท"] != "เคลียร์หนี้"]
+total = normal["ยอดรวม"].sum()
 mama_owes_total = filtered["หม่ามี้ติดปะป๊า"].sum()
 papa_owes_total = filtered["ปะป๊าติดหม่ามี้"].sum()
 net = mama_owes_total - papa_owes_total  # บวก = หม่ามี้ยังติดอยู่, ลบ = ปะป๊ายังติดอยู่
