@@ -98,23 +98,27 @@ hr { border-color: rgba(255,255,255,0.1) !important; }
 /* Warning/Success/Info boxes */
 .stAlert { border-radius: 12px !important; }
 
-/* Material Symbols fix - ซ่อน icon ที่แสดงเป็นข้อความ */
-.material-symbols-rounded {
-    font-family: 'Material Symbols Rounded' !important;
-    font-size: 24px !important;
-    font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+/* Nuclear fix for Material Symbols showing as text */
+span.material-symbols-rounded {
+    font-size: 0 !important;
+    line-height: 0 !important;
     color: transparent !important;
+    visibility: hidden !important;
     width: 0 !important;
+    height: 0 !important;
     overflow: hidden !important;
-    display: none !important;
+    display: inline-block !important;
+    max-width: 0 !important;
 }
-/* ซ่อน icon ใน sidebar collapse */
-[data-testid="collapsedControl"] span {
-    display: none !important;
+/* sidebar collapse */
+[data-testid="collapsedControl"] {
+    font-size: 0 !important;
+    color: transparent !important;
 }
-/* ซ่อน icon ใน expander */
-[data-testid="stExpander"] summary span[data-testid="stExpanderToggleIcon"] {
-    display: none !important;
+[data-testid="collapsedControl"] * {
+    font-size: 0 !important;
+    color: transparent !important;
+    visibility: hidden !important;
 }
 
 /* Expander */
