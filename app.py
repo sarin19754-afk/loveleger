@@ -432,23 +432,22 @@ with tab_table:
 
     st.divider()
     # Delete
-    with st.expander("🗑️ ลบรายการ"):
-        st.markdown("⚠️ **การลบจะแก้ไข Google Sheets โดยตรง**")
-        row_nums = list(filtered.index)
-        if row_nums:
-            col_del1, col_del2 = st.columns([3, 1])
-            with col_del1:
-                del_idx = st.selectbox(
-                    "เลือกรายการที่ต้องการลบ",
-                    options=row_nums,
-                    format_func=lambda i: f"📌 {df.loc[i, 'วันที่'].strftime('%Y-%m-%d') if pd.notna(df.loc[i, 'วันที่']) else ''} | {df.loc[i, 'รายการ']} | {float(df.loc[i, 'ยอดรวม']):,.0f} ฿",
-                )
-            with col_del2:
-                st.write("")
-                st.write("")
-                if st.button("🗑️ ลบ", type="primary", use_container_width=True):
-                    delete_row(del_idx)
-                    st.success("✅ ลบเรียบร้อย!")
-                    st.rerun()
-        else:
-            st.info("ไม่มีรายการให้ลบ")
+    st.markdown("#### 🗑️ ลบรายการ")
+    row_nums = list(filtered.index)
+    if row_nums:
+        col_del1, col_del2 = st.columns([3, 1])
+        with col_del1:
+            del_idx = st.selectbox(
+                "เลือกรายการที่ต้องการลบ",
+                options=row_nums,
+                format_func=lambda i: f"📌 {df.loc[i, 'วันที่'].strftime('%Y-%m-%d') if pd.notna(df.loc[i, 'วันที่']) else ''} | {df.loc[i, 'รายการ']} | {float(df.loc[i, 'ยอดรวม']):,.0f} ฿",
+            )
+        with col_del2:
+            st.write("")
+            st.write("")
+            if st.button("🗑️ ลบรายการนี้", type="primary", use_container_width=True):
+                delete_row(del_idx)
+                st.success("✅ ลบเรียบร้อย!")
+                st.rerun()
+    else:
+        st.info("ไม่มีรายการให้ลบ")
