@@ -1,4 +1,5 @@
 import streamlit as st
+import streamlit.components.v1 as components
 import pandas as pd
 import gspread
 from google.oauth2.service_account import Credentials
@@ -213,7 +214,7 @@ def delete_row(row_index: int):
 
 # ─── UI ─────────────────────────────────────────────────────────────────────
 
-st.components.v1.html("""
+components.html("""
 <script>
 const link = document.createElement('link');
 link.rel = 'stylesheet';
