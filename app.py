@@ -19,6 +19,7 @@ st.set_page_config(
 st.markdown("""
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200');
 @import url('https://fonts.googleapis.com/icon?family=Material+Icons');
 
 * { font-family: 'Kanit', sans-serif !important; }
@@ -97,19 +98,15 @@ hr { border-color: rgba(255,255,255,0.1) !important; }
 /* Warning/Success/Info boxes */
 .stAlert { border-radius: 12px !important; }
 
-/* Material Icons font fix */
-.material-icons, .material-symbols-rounded, span.material-icons {
-    font-family: 'Material Icons' !important;
+/* Material Symbols fix - แก้ keyboard_double_arrow แสดงเป็นข้อความ */
+.material-symbols-rounded {
+    font-family: 'Material Symbols Rounded' !important;
+    font-size: 24px !important;
+    font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
 }
-/* ซ่อนข้อความ keyboard_double_arrow */
-[data-testid="collapsedControl"] { overflow: hidden; }
-[data-testid="collapsedControl"] span {
+.material-icons {
     font-family: 'Material Icons' !important;
-    font-size: 20px !important;
-}
-button[data-testid="baseButton-header"] span {
-    font-family: 'Material Icons' !important;
-    font-size: 20px !important;
+    font-size: 24px !important;
 }
 
 /* Expander */
