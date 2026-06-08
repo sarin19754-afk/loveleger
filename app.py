@@ -10,10 +10,93 @@ import json
 import os
 
 st.set_page_config(
-    page_title="บัญชีค่าใช้จ่าย 💑",
-    page_icon="💑",
+    page_title="LoveLedger 🐱",
+    page_icon="🐱",
     layout="wide",
 )
+
+# ─── Custom CSS ──────────────────────────────────────────────────────────────
+st.markdown("""
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;600;700&display=swap');
+
+* { font-family: 'Kanit', sans-serif !important; }
+
+/* Background */
+.stApp {
+    background: linear-gradient(135deg, #0f0c29, #302b63, #24243e);
+    min-height: 100vh;
+}
+
+/* Sidebar */
+[data-testid="stSidebar"] {
+    background: linear-gradient(180deg, #1a0533 0%, #3b1a6b 50%, #6b2fa0 100%) !important;
+    border-right: 1px solid rgba(255,255,255,0.1);
+}
+[data-testid="stSidebar"] * { color: #fff !important; }
+[data-testid="stSidebar"] .stTextInput input,
+[data-testid="stSidebar"] .stNumberInput input,
+[data-testid="stSidebar"] .stSelectbox select {
+    background: rgba(255,255,255,0.12) !important;
+    border: 1px solid rgba(255,255,255,0.3) !important;
+    border-radius: 10px !important;
+    color: white !important;
+}
+[data-testid="stSidebar"] .stFormSubmitButton button {
+    background: linear-gradient(90deg, #f953c6, #b91d73) !important;
+    border: none !important;
+    border-radius: 12px !important;
+    font-weight: 700 !important;
+    font-size: 1.1rem !important;
+    color: white !important;
+    box-shadow: 0 4px 15px rgba(249,83,198,0.4) !important;
+}
+
+/* Metric cards */
+[data-testid="stMetric"] {
+    background: rgba(255,255,255,0.07) !important;
+    border-radius: 20px !important;
+    padding: 20px !important;
+    border: 1px solid rgba(255,255,255,0.15) !important;
+    backdrop-filter: blur(10px) !important;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.3) !important;
+    transition: transform 0.2s;
+}
+[data-testid="stMetric"]:hover { transform: translateY(-3px); }
+[data-testid="stMetricLabel"] { color: rgba(255,255,255,0.7) !important; font-size: 0.85rem !important; }
+[data-testid="stMetricValue"] { color: #fff !important; font-weight: 700 !important; font-size: 1.6rem !important; }
+
+/* Tabs */
+.stTabs [data-baseweb="tab-list"] {
+    background: rgba(255,255,255,0.05) !important;
+    border-radius: 12px !important;
+    padding: 4px !important;
+}
+.stTabs [data-baseweb="tab"] {
+    border-radius: 8px !important;
+    color: rgba(255,255,255,0.6) !important;
+}
+.stTabs [aria-selected="true"] {
+    background: linear-gradient(90deg, #f953c6, #b91d73) !important;
+    color: white !important;
+}
+
+/* Buttons */
+.stButton button {
+    border-radius: 12px !important;
+    font-weight: 600 !important;
+}
+
+/* Divider */
+hr { border-color: rgba(255,255,255,0.1) !important; }
+
+/* Dataframe */
+[data-testid="stDataFrame"] { border-radius: 15px !important; overflow: hidden; }
+
+/* Warning/Success/Info boxes */
+.stAlert { border-radius: 12px !important; }
+</style>
+""", unsafe_allow_html=True)
 
 SPREADSHEET_ID = "1sVW_1Ssf8SFCKzGJmrXOJyRwsxvY0C9cvR9nFv_ujKg"
 SHEET_NAME = "รายการ"
@@ -106,7 +189,22 @@ def delete_row(row_index: int):
 
 # ─── UI ─────────────────────────────────────────────────────────────────────
 
-st.title("💑 บัญชีค่าใช้จ่าย ปะป๊า & หม่ามี้")
+st.markdown("""
+<div style="display:flex; align-items:center; gap:20px; margin-bottom:10px;">
+    <div style="font-size:80px; line-height:1; filter:drop-shadow(0 0 20px rgba(255,255,255,0.5));">
+        🐱
+    </div>
+    <div>
+        <div style="font-size:2.4rem; font-weight:700; color:white; line-height:1.1;
+                    text-shadow: 0 0 30px rgba(249,83,198,0.8);">
+            LoveLedger
+        </div>
+        <div style="font-size:1rem; color:rgba(255,255,255,0.6); margin-top:4px;">
+            💕 บัญชีค่าใช้จ่าย ปะป๊า & หม่ามี้
+        </div>
+    </div>
+</div>
+""", unsafe_allow_html=True)
 
 # Sidebar — add expense
 with st.sidebar:
