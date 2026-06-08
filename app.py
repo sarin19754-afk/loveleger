@@ -216,10 +216,17 @@ def delete_row(row_index: int):
 
 components.html("""
 <script>
-const link = document.createElement('link');
-link.rel = 'stylesheet';
-link.href = 'https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200';
-document.head.appendChild(link);
+function hideIcons() {
+    // ซ่อน keyboard_double_arrow ใน sidebar
+    const spans = window.parent.document.querySelectorAll('span.material-symbols-rounded');
+    spans.forEach(el => {
+        el.style.cssText = 'font-size:0!important;color:transparent!important;width:0!important;overflow:hidden!important;';
+    });
+}
+hideIcons();
+setTimeout(hideIcons, 500);
+setTimeout(hideIcons, 1500);
+setTimeout(hideIcons, 3000);
 </script>
 """, height=0)
 
