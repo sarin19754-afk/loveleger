@@ -95,6 +95,25 @@ hr { border-color: rgba(255,255,255,0.1) !important; }
 
 /* Warning/Success/Info boxes */
 .stAlert { border-radius: 12px !important; }
+
+/* ซ่อน icon ที่แสดงเป็นข้อความ */
+[data-testid="collapsedControl"] span,
+button[kind="header"] span { font-size: 0 !important; }
+button[kind="header"]::before { content: "◀"; font-size: 14px; color: white; }
+
+/* Expander */
+[data-testid="stExpander"] {
+    background: rgba(255,255,255,0.05) !important;
+    border-radius: 12px !important;
+    border: 1px solid rgba(255,255,255,0.1) !important;
+}
+
+/* Selectbox */
+[data-testid="stSelectbox"] > div > div {
+    background: rgba(255,255,255,0.08) !important;
+    border-radius: 10px !important;
+    border: 1px solid rgba(255,255,255,0.15) !important;
+}
 </style>
 """, unsafe_allow_html=True)
 
@@ -409,17 +428,25 @@ with tab_table:
             mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
         )
 
+    st.divider()
     # Delete
     with st.expander("🗑️ ลบรายการ"):
-        st.warning("การลบจะแก้ไข Google Sheets โดยตรง")
+        st.markdown("⚠️ **การลบจะแก้ไข Google Sheets โดยตรง**")
         row_nums = list(filtered.index)
         if row_nums:
-            del_idx = st.selectbox(
-                "เลือกแถวที่ต้องการลบ (index จาก 0)",
-                options=row_nums,
-                format_func=lambda i: f"{i}: {df.loc[i, 'รายการ']} — {df.loc[i, 'ยอดรวม']} ฿",
-            )
-            if st.button("ลบรายการนี้", type="primary"):
-                delete_row(del_idx)
-                st.success("ลบแล้ว")
-                st.rerun()
+            col_del1, col_del2 = st.columns([3, 1])
+            with col_del1:
+                del_idx = st.selectbox(
+                    "เลือกรายการที่ต้องการลบ",
+                    options=row_nums,
+                    format_func=lambda i: f"📌 {df.loc[i, 'วันที่'].strftime('%Y-%m-%d') if pd.notna(df.loc[i, 'วันที่']) else ''} | {df.loc[i, 'รายการ']} | {float(df.loc[i, 'ยอดรวม']):,.0f} ฿",
+                )
+            with col_del2:
+                st.write("")
+                st.write("")
+                if st.button("🗑️ ลบ", type="primary", use_container_width=True):
+                    delete_row(del_idx)
+                    st.success("✅ ลบเรียบร้อย!")
+                    st.rerun()
+        else:
+            st.info("ไม่มีรายการให้ลบ")
