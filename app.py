@@ -62,6 +62,8 @@ def get_sheet():
     spreadsheet = client.open_by_key(SPREADSHEET_ID)
     try:
         ws = spreadsheet.worksheet(SHEET_NAME)
+        # อัพเดต header ให้เป็นชื่อใหม่เสมอ
+        ws.update('A1', [COLUMNS])
     except gspread.exceptions.WorksheetNotFound:
         ws = spreadsheet.add_worksheet(title=SHEET_NAME, rows=1000, cols=10)
         ws.append_row(COLUMNS)
