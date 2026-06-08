@@ -98,27 +98,12 @@ hr { border-color: rgba(255,255,255,0.1) !important; }
 /* Warning/Success/Info boxes */
 .stAlert { border-radius: 12px !important; }
 
-/* Nuclear fix for Material Symbols showing as text */
+/* Fix Material Symbols showing as text */
 span.material-symbols-rounded {
-    font-size: 0 !important;
-    line-height: 0 !important;
-    color: transparent !important;
-    visibility: hidden !important;
-    width: 0 !important;
-    height: 0 !important;
-    overflow: hidden !important;
-    display: inline-block !important;
-    max-width: 0 !important;
-}
-/* sidebar collapse */
-[data-testid="collapsedControl"] {
-    font-size: 0 !important;
-    color: transparent !important;
-}
-[data-testid="collapsedControl"] * {
-    font-size: 0 !important;
-    color: transparent !important;
-    visibility: hidden !important;
+    font-family: 'Material Symbols Rounded' !important;
+    font-size: 20px !important;
+    color: rgba(255,255,255,0.7) !important;
+    visibility: visible !important;
 }
 
 /* Expander */
@@ -227,6 +212,15 @@ def delete_row(row_index: int):
 
 
 # ─── UI ─────────────────────────────────────────────────────────────────────
+
+st.components.v1.html("""
+<script>
+const link = document.createElement('link');
+link.rel = 'stylesheet';
+link.href = 'https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200';
+document.head.appendChild(link);
+</script>
+""", height=0)
 
 st.markdown("""
 <div style="display:flex; align-items:center; gap:20px; margin-bottom:10px;">
