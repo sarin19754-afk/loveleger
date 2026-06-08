@@ -224,11 +224,11 @@ if abs(net) > 0.01:
             st.warning(f"💸 ปะป๊ายังติดหม่ามี้อยู่ **{-net:,.2f} ฿**")
     with col_clear2:
         if st.button("✅ เคลียร์หนี้แล้ว!", type="primary", use_container_width=True):
-            # บันทึก row เคลียร์หนี้ (หักล้างยอดคงค้าง)
-            if net > 0:
-                clear_row = [date.today().strftime("%Y-%m-%d"), "เคลียร์หนี้", "อื่นๆ", net, "เคลียร์หนี้", -net, 0.0, "เคลียร์หนี้กัน"]
+            net_val = float(net)
+            if net_val > 0:
+                clear_row = [date.today().strftime("%Y-%m-%d"), "เคลียร์หนี้", "อื่นๆ", round(net_val, 2), "เคลียร์หนี้", round(-net_val, 2), 0.0, "เคลียร์หนี้กัน"]
             else:
-                clear_row = [date.today().strftime("%Y-%m-%d"), "เคลียร์หนี้", "อื่นๆ", -net, "เคลียร์หนี้", 0.0, net, "เคลียร์หนี้กัน"]
+                clear_row = [date.today().strftime("%Y-%m-%d"), "เคลียร์หนี้", "อื่นๆ", round(-net_val, 2), "เคลียร์หนี้", 0.0, round(net_val, 2), "เคลียร์หนี้กัน"]
             append_row(clear_row)
             st.success("✅ เคลียร์หนี้เรียบร้อย!")
             st.rerun()
