@@ -75,8 +75,17 @@ def load_data() -> pd.DataFrame:
         return pd.DataFrame(columns=COLUMNS)
     df = pd.DataFrame(records)
     df["ยอดรวม"] = pd.to_numeric(df["ยอดรวม"], errors="coerce").fillna(0)
-    df["หม่ามี้ติดปะป๊า"] = pd.to_numeric(df["หม่ามี้ติดปะป๊า"], errors="coerce").fillna(0)
-    df["ปะป๊าติดหม่ามี้"] = pd.to_numeric(df["ปะป๊าติดหม่ามี้"], errors="coerce").fillna(0)
+    # รองรับ column ชื่อเก่า (ปะป๊า/หม่ามี้) และชื่อใหม่
+    if "หม่ามี้ติดปะป๊า" not in df.columns:
+        df["หม่ามี้ติดปะป๊า"] = pd.to_numeric(df.get("หม่ามี้", 0), errors="coerce").fillna(0)
+    else:
+        df["หม่ามี้ติดปะป๊า"] = pd.to_numeric(df["หม่ามี้ติดปะป๊า"], errors="coerce").fillna(0)
+    if "ปะป๊าติดหม่ามี้" not in df.columns:
+        df["ปะป๊าติดหม่ามี้"] = pd.to_numeric(df.get("ปะป๊า", 0), errors="coerce").fillna(0)
+    else:
+        df["ปะป๊าติดหม่ามี้"] = pd.to_numeric(df["ปะป๊าติดหม่ามี้"], errors="coerce").fillna(0)
+    if "ประเภท" not in df.columns:
+        df["ประเภท"] = ""
     df["วันที่"] = pd.to_datetime(df["วันที่"], errors="coerce")
     return df
 
