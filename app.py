@@ -214,21 +214,23 @@ def delete_row(row_index: int):
 
 # ─── UI ─────────────────────────────────────────────────────────────────────
 
-components.html("""
+st.markdown("""
 <script>
 function hideIcons() {
-    // ซ่อน keyboard_double_arrow ใน sidebar
-    const spans = window.parent.document.querySelectorAll('span.material-symbols-rounded');
-    spans.forEach(el => {
-        el.style.cssText = 'font-size:0!important;color:transparent!important;width:0!important;overflow:hidden!important;';
+    document.querySelectorAll('span.material-symbols-rounded').forEach(el => {
+        el.style.fontSize = '0';
+        el.style.color = 'transparent';
+        el.style.width = '0';
+        el.style.overflow = 'hidden';
+        el.style.display = 'none';
     });
 }
+// รัน observer เพื่อดักทุกครั้งที่ DOM เปลี่ยน
+const obs = new MutationObserver(hideIcons);
+obs.observe(document.body, {childList: true, subtree: true});
 hideIcons();
-setTimeout(hideIcons, 500);
-setTimeout(hideIcons, 1500);
-setTimeout(hideIcons, 3000);
 </script>
-""", height=0)
+""", unsafe_allow_html=True)
 
 st.markdown("""
 <div style="display:flex; align-items:center; gap:20px; margin-bottom:10px;">
