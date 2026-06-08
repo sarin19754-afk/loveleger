@@ -29,7 +29,15 @@ CATEGORIES = [
     "อื่นๆ",
 ]
 
-COLUMNS = ["วันที่", "รายการ", "หมวดหมู่", "ยอดรวม", "ปะป๊า", "หม่ามี้", "หมายเหตุ"]
+COLUMNS = ["วันที่", "รายการ", "หมวดหมู่", "ยอดรวม", "ประเภท", "หม่ามี้ติดปะป๊า", "ปะป๊าติดหม่ามี้", "หมายเหตุ"]
+
+SPLIT_OPTIONS = [
+    "ปะป๊าจ่าย หาร 2",        # ปะป๊าจ่าย แต่หารกัน → หม่ามี้ติดปะป๊า amount/2
+    "หม่ามี้จ่าย หาร 2",       # หม่ามี้จ่าย แต่หารกัน → ปะป๊าติดหม่ามี้ amount/2
+    "ปะป๊าจ่ายแทนหม่ามี้",     # ปะป๊าจ่ายแทน → หม่ามี้ติดปะป๊า amount
+    "หม่ามี้จ่ายแทนปะป๊า",     # หม่ามี้จ่ายแทน → ปะป๊าติดหม่ามี้ amount
+    "ไม่คิด",
+]
 
 # ─── Google Sheets connection ───────────────────────────────────────────────
 
@@ -67,8 +75,8 @@ def load_data() -> pd.DataFrame:
         return pd.DataFrame(columns=COLUMNS)
     df = pd.DataFrame(records)
     df["ยอดรวม"] = pd.to_numeric(df["ยอดรวม"], errors="coerce").fillna(0)
-    df["ปะป๊า"] = pd.to_numeric(df["ปะป๊า"], errors="coerce").fillna(0)
-    df["หม่ามี้"] = pd.to_numeric(df["หม่ามี้"], errors="coerce").fillna(0)
+    df["หม่ามี้ติดปะป๊า"] = pd.to_numeric(df["หม่ามี้ติดปะป๊า"], errors="coerce").fillna(0)
+    df["ปะป๊าติดหม่ามี้"] = pd.to_numeric(df["ปะป๊าติดหม่ามี้"], errors="coerce").fillna(0)
     df["วันที่"] = pd.to_datetime(df["วันที่"], errors="coerce")
     return df
 
@@ -97,7 +105,17 @@ with st.sidebar:
         description = st.text_input("รายการ", placeholder="เช่น ข้าวเที่ยง, ตั๋วหนัง")
         category = st.selectbox("หมวดหมู่", CATEGORIES)
         amount = st.number_input("ยอดรวม (บาท)", min_value=0.0, step=1.0, format="%.2f")
-        split_mode = st.radio("การแบ่ง", ["หาร 2", "ปะป๊าจ่าย", "หม่ามี้จ่าย", "ไม่คิด"])
+        split_mode = st.radio(
+            "ประเภทการจ่าย",
+            SPLIT_OPTIONS,
+            captions=[
+                f"หม่ามี้ติดปะป๊า ครึ่งนึง",
+                f"ปะป๊าติดหม่ามี้ ครึ่งนึง",
+                f"หม่ามี้ติดปะป๊า เต็มจำนวน",
+                f"ปะป๊าติดหม่ามี้ เต็มจำนวน",
+                f"ไม่นับหนี้",
+            ]
+        )
         note = st.text_input("หมายเหตุ (ถ้ามี)")
         submitted = st.form_submit_button("บันทึก", use_container_width=True, type="primary")
 
@@ -107,26 +125,35 @@ with st.sidebar:
         elif amount <= 0:
             st.error("กรุณากรอกยอดเงิน")
         else:
-            if split_mode == "หาร 2":
-                papa = mama = amount / 2
-            elif split_mode == "ปะป๊าจ่าย":
-                papa, mama = amount, 0.0
-            elif split_mode == "หม่ามี้จ่าย":
-                papa, mama = 0.0, amount
+            if split_mode == "ปะป๊าจ่าย หาร 2":
+                mama_owes, papa_owes = amount / 2, 0.0
+            elif split_mode == "หม่ามี้จ่าย หาร 2":
+                mama_owes, papa_owes = 0.0, amount / 2
+            elif split_mode == "ปะป๊าจ่ายแทนหม่ามี้":
+                mama_owes, papa_owes = amount, 0.0
+            elif split_mode == "หม่ามี้จ่ายแทนปะป๊า":
+                mama_owes, papa_owes = 0.0, amount
             else:  # ไม่คิด
-                papa = mama = 0.0
+                mama_owes = papa_owes = 0.0
 
             row = [
                 expense_date.strftime("%Y-%m-%d"),
                 description,
                 category,
                 amount,
-                papa,
-                mama,
+                split_mode,
+                mama_owes,
+                papa_owes,
                 note,
             ]
             append_row(row)
-            st.success(f"บันทึกแล้ว: {description} {amount:,.2f} บาท")
+            # แสดงผลสรุป
+            if mama_owes > 0:
+                st.success(f"✅ บันทึกแล้ว — หม่ามี้ติดปะป๊า {mama_owes:,.2f} ฿")
+            elif papa_owes > 0:
+                st.success(f"✅ บันทึกแล้ว — ปะป๊าติดหม่ามี้ {papa_owes:,.2f} ฿")
+            else:
+                st.success(f"✅ บันทึกแล้ว: {description} {amount:,.2f} ฿")
 
 # ─── Load data ───────────────────────────────────────────────────────────────
 
@@ -160,20 +187,40 @@ if search:
 # ─── Summary cards ───────────────────────────────────────────────────────────
 
 total = filtered["ยอดรวม"].sum()
-papa_total = filtered["ปะป๊า"].sum()
-mama_total = filtered["หม่ามี้"].sum()
+mama_owes_total = filtered["หม่ามี้ติดปะป๊า"].sum()
+papa_owes_total = filtered["ปะป๊าติดหม่ามี้"].sum()
+net = mama_owes_total - papa_owes_total  # บวก = หม่ามี้ยังติดอยู่, ลบ = ปะป๊ายังติดอยู่
 
 c1, c2, c3, c4 = st.columns(4)
-c1.metric("ยอดรวมทั้งหมด", f"{total:,.2f} ฿")
-c2.metric("ปะป๊าจ่าย", f"{papa_total:,.2f} ฿")
-c3.metric("หม่ามี้จ่าย", f"{mama_total:,.2f} ฿")
-diff = papa_total - mama_total
-if abs(diff) < 0.01:
-    c4.metric("ส่วนต่าง", "เท่ากัน ✅")
-elif diff > 0:
-    c4.metric("ส่วนต่าง", f"ปะป๊าจ่ายเกิน {diff:,.2f} ฿", delta=f"หม่ามี้ต้องคืน {diff:,.2f} ฿", delta_color="inverse")
+c1.metric("💰 ยอดรวมทั้งหมด", f"{total:,.2f} ฿")
+c2.metric("👨 หม่ามี้ติดปะป๊า", f"{mama_owes_total:,.2f} ฿")
+c3.metric("👩 ปะป๊าติดหม่ามี้", f"{papa_owes_total:,.2f} ฿")
+if abs(net) < 0.01:
+    c4.metric("🎉 สรุปหนี้", "เคลียร์แล้ว ✅")
+elif net > 0:
+    c4.metric("🧾 สรุปหนี้", f"หม่ามี้ติดปะป๊า {net:,.2f} ฿", delta=f"หม่ามี้ต้องจ่าย {net:,.2f} ฿", delta_color="inverse")
 else:
-    c4.metric("ส่วนต่าง", f"หม่ามี้จ่ายเกิน {-diff:,.2f} ฿", delta=f"ปะป๊าต้องคืน {-diff:,.2f} ฿", delta_color="inverse")
+    c4.metric("🧾 สรุปหนี้", f"ปะป๊าติดหม่ามี้ {-net:,.2f} ฿", delta=f"ปะป๊าต้องจ่าย {-net:,.2f} ฿", delta_color="inverse")
+
+# ─── ปุ่มเคลียร์หนี้ ──────────────────────────────────────────────────────────
+if abs(net) > 0.01:
+    st.divider()
+    col_clear1, col_clear2 = st.columns([3, 1])
+    with col_clear1:
+        if net > 0:
+            st.warning(f"💸 หม่ามี้ยังติดปะป๊าอยู่ **{net:,.2f} ฿**")
+        else:
+            st.warning(f"💸 ปะป๊ายังติดหม่ามี้อยู่ **{-net:,.2f} ฿**")
+    with col_clear2:
+        if st.button("✅ เคลียร์หนี้แล้ว!", type="primary", use_container_width=True):
+            # บันทึก row เคลียร์หนี้ (หักล้างยอดคงค้าง)
+            if net > 0:
+                clear_row = [date.today().strftime("%Y-%m-%d"), "เคลียร์หนี้", "อื่นๆ", net, "เคลียร์หนี้", -net, 0.0, "เคลียร์หนี้กัน"]
+            else:
+                clear_row = [date.today().strftime("%Y-%m-%d"), "เคลียร์หนี้", "อื่นๆ", -net, "เคลียร์หนี้", 0.0, net, "เคลียร์หนี้กัน"]
+            append_row(clear_row)
+            st.success("✅ เคลียร์หนี้เรียบร้อย!")
+            st.rerun()
 
 st.divider()
 
@@ -198,8 +245,8 @@ with tab_chart:
 
     with ch2:
         compare_df = pd.DataFrame({
-            "คน": ["ปะป๊า", "หม่ามี้"],
-            "ยอดรวม": [papa_total, mama_total],
+            "คน": ["หม่ามี้ติดปะป๊า", "ปะป๊าติดหม่ามี้"],
+            "ยอดรวม": [mama_owes_total, papa_owes_total],
         })
         fig_bar = px.bar(
             compare_df,
@@ -230,8 +277,8 @@ with tab_table:
     display = filtered.copy()
     display["วันที่"] = display["วันที่"].dt.strftime("%Y-%m-%d")
     display["ยอดรวม"] = display["ยอดรวม"].map("{:,.2f}".format)
-    display["ปะป๊า"] = display["ปะป๊า"].map("{:,.2f}".format)
-    display["หม่ามี้"] = display["หม่ามี้"].map("{:,.2f}".format)
+    display["หม่ามี้ติดปะป๊า"] = display["หม่ามี้ติดปะป๊า"].map("{:,.2f}".format)
+    display["ปะป๊าติดหม่ามี้"] = display["ปะป๊าติดหม่ามี้"].map("{:,.2f}".format)
 
     st.dataframe(display.reset_index(drop=True), use_container_width=True, height=400)
 
