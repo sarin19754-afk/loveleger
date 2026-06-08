@@ -19,6 +19,7 @@ st.set_page_config(
 st.markdown("""
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;600;700&display=swap');
+@import url('https://fonts.googleapis.com/icon?family=Material+Icons');
 
 * { font-family: 'Kanit', sans-serif !important; }
 
@@ -96,10 +97,20 @@ hr { border-color: rgba(255,255,255,0.1) !important; }
 /* Warning/Success/Info boxes */
 .stAlert { border-radius: 12px !important; }
 
-/* ซ่อน icon ที่แสดงเป็นข้อความ */
-[data-testid="collapsedControl"] span,
-button[kind="header"] span { font-size: 0 !important; }
-button[kind="header"]::before { content: "◀"; font-size: 14px; color: white; }
+/* Material Icons font fix */
+.material-icons, .material-symbols-rounded, span.material-icons {
+    font-family: 'Material Icons' !important;
+}
+/* ซ่อนข้อความ keyboard_double_arrow */
+[data-testid="collapsedControl"] { overflow: hidden; }
+[data-testid="collapsedControl"] span {
+    font-family: 'Material Icons' !important;
+    font-size: 20px !important;
+}
+button[data-testid="baseButton-header"] span {
+    font-family: 'Material Icons' !important;
+    font-size: 20px !important;
+}
 
 /* Expander */
 [data-testid="stExpander"] {
