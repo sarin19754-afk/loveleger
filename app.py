@@ -222,44 +222,41 @@ def delete_row(row_index: int):
 # ─── UI ─────────────────────────────────────────────────────────────────────
 
 
+# ─── Header ──────────────────────────────────────────────────────────────────
 st.markdown("""
-<div style="display:flex; align-items:center; gap:20px; margin-bottom:10px;">
-    <div style="font-size:80px; line-height:1; filter:drop-shadow(0 0 20px rgba(255,255,255,0.5));">
-        🐱
-    </div>
+<div style="display:flex; align-items:center; gap:16px; margin-bottom:24px;">
+    <div style="font-size:64px; line-height:1;">🐱</div>
     <div>
-        <div style="font-size:2.4rem; font-weight:700; color:white; line-height:1.1;
-                    text-shadow: 0 0 30px rgba(249,83,198,0.8);">
-            LoveLedger
-        </div>
-        <div style="font-size:1rem; color:rgba(255,255,255,0.6); margin-top:4px;">
+        <div style="font-size:2.2rem; font-weight:700; color:white;
+                    text-shadow: 0 0 30px rgba(249,83,198,0.8);">LoveLedger</div>
+        <div style="font-size:0.95rem; color:rgba(255,255,255,0.6);">
             💕 บัญชีค่าใช้จ่าย ปะป๊า & หม่ามี้
         </div>
     </div>
 </div>
 """, unsafe_allow_html=True)
 
-# Sidebar — add expense
-with st.sidebar:
-    st.header("➕ เพิ่มรายการ")
+# ─── Add form (top of page, 2 columns) ───────────────────────────────────────
+with st.container():
+    st.markdown("### ➕ เพิ่มรายการ")
     with st.form("add_form", clear_on_submit=True):
-        expense_date = st.date_input("วันที่", value=date.today())
-        description = st.text_input("รายการ", placeholder="เช่น ข้าวเที่ยง, ตั๋วหนัง")
-        category = st.selectbox("หมวดหมู่", CATEGORIES)
-        amount = st.number_input("ยอดรวม (บาท)", min_value=0.0, step=1.0, format="%.2f")
-        split_mode = st.radio(
-            "ประเภทการจ่าย",
-            SPLIT_OPTIONS,
-            captions=[
-                f"หม่ามี้ติดปะป๊า ครึ่งนึง",
-                f"ปะป๊าติดหม่ามี้ ครึ่งนึง",
-                f"หม่ามี้ติดปะป๊า เต็มจำนวน",
-                f"ปะป๊าติดหม่ามี้ เต็มจำนวน",
-                f"ไม่นับหนี้",
-            ]
-        )
-        note = st.text_input("หมายเหตุ (ถ้ามี)")
-        submitted = st.form_submit_button("บันทึก", use_container_width=True, type="primary")
+        col1, col2, col3 = st.columns([1, 2, 1])
+        with col1:
+            expense_date = st.date_input("วันที่", value=date.today())
+        with col2:
+            description = st.text_input("รายการ", placeholder="เช่น ข้าวเที่ยง, ตั๋วหนัง")
+        with col3:
+            category = st.selectbox("หมวดหมู่", CATEGORIES)
+
+        col4, col5, col6 = st.columns([1, 2, 1])
+        with col4:
+            amount = st.number_input("ยอดรวม (บาท)", min_value=0.0, step=1.0, format="%.2f")
+        with col5:
+            split_mode = st.selectbox("ประเภทการจ่าย", SPLIT_OPTIONS)
+        with col6:
+            note = st.text_input("หมายเหตุ (ถ้ามี)")
+
+        submitted = st.form_submit_button("💾 บันทึก", use_container_width=True, type="primary")
 
     if submitted:
         if not description:
@@ -275,21 +272,11 @@ with st.sidebar:
                 mama_owes, papa_owes = amount, 0.0
             elif split_mode == "หม่ามี้จ่ายแทนปะป๊า":
                 mama_owes, papa_owes = 0.0, amount
-            else:  # ไม่คิด
+            else:
                 mama_owes = papa_owes = 0.0
-
-            row = [
-                expense_date.strftime("%Y-%m-%d"),
-                description,
-                category,
-                amount,
-                split_mode,
-                mama_owes,
-                papa_owes,
-                note,
-            ]
+            row = [expense_date.strftime("%Y-%m-%d"), description, category, amount,
+                   split_mode, mama_owes, papa_owes, note]
             append_row(row)
-            # แสดงผลสรุป
             if mama_owes > 0:
                 st.success(f"✅ บันทึกแล้ว — หม่ามี้ติดปะป๊า {mama_owes:,.2f} ฿")
             elif papa_owes > 0:
@@ -297,12 +284,13 @@ with st.sidebar:
             else:
                 st.success(f"✅ บันทึกแล้ว: {description} {amount:,.2f} ฿")
 
-# ─── Load data ───────────────────────────────────────────────────────────────
+st.divider()
 
+# ─── Load data ───────────────────────────────────────────────────────────────
 df = load_data()
 
 if df.empty:
-    st.info("ยังไม่มีข้อมูล กรุณาเพิ่มรายการทางซ้าย")
+    st.info("ยังไม่มีข้อมูล กรุณาเพิ่มรายการด้านบน")
     st.stop()
 
 # ─── Filters ─────────────────────────────────────────────────────────────────
