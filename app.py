@@ -20,8 +20,7 @@ st.set_page_config(
 st.markdown("""
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;600;700&display=swap');
-@import url('https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200');
-@import url('https://fonts.googleapis.com/icon?family=Material+Icons');
+@import url('https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded');
 
 * { font-family: 'Kanit', sans-serif !important; }
 
@@ -100,11 +99,19 @@ hr { border-color: rgba(255,255,255,0.1) !important; }
 .stAlert { border-radius: 12px !important; }
 
 /* Fix Material Symbols showing as text */
-span.material-symbols-rounded {
+.material-symbols-rounded {
     font-family: 'Material Symbols Rounded' !important;
+    font-weight: normal !important;
+    font-style: normal !important;
     font-size: 20px !important;
-    color: rgba(255,255,255,0.7) !important;
-    visibility: visible !important;
+    line-height: 1 !important;
+    letter-spacing: normal !important;
+    text-transform: none !important;
+    white-space: nowrap !important;
+    word-wrap: normal !important;
+    -webkit-font-feature-settings: 'liga' !important;
+    font-feature-settings: 'liga' !important;
+    -webkit-font-smoothing: antialiased !important;
 }
 
 /* Expander */
@@ -214,23 +221,6 @@ def delete_row(row_index: int):
 
 # ─── UI ─────────────────────────────────────────────────────────────────────
 
-st.markdown("""
-<script>
-function hideIcons() {
-    document.querySelectorAll('span.material-symbols-rounded').forEach(el => {
-        el.style.fontSize = '0';
-        el.style.color = 'transparent';
-        el.style.width = '0';
-        el.style.overflow = 'hidden';
-        el.style.display = 'none';
-    });
-}
-// รัน observer เพื่อดักทุกครั้งที่ DOM เปลี่ยน
-const obs = new MutationObserver(hideIcons);
-obs.observe(document.body, {childList: true, subtree: true});
-hideIcons();
-</script>
-""", unsafe_allow_html=True)
 
 st.markdown("""
 <div style="display:flex; align-items:center; gap:20px; margin-bottom:10px;">
